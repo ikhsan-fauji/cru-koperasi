@@ -11,6 +11,7 @@ package com.enigma.koperasi.entities;
 *           "jumlah": 3
 *       }
  */
+
 public class SaveTransaksiAllBody {
 
     private String nama_anggota;

@@ -9,4 +9,5 @@ public interface AnggotaRepository extends JpaRepository<AnggotaEntity, Integer>
 
     AnggotaEntity findByNama(String nama);
 
+//    AnggotaEntity findByNo_hp(String hp);
 }

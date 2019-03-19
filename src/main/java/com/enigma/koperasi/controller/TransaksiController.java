@@ -56,7 +56,7 @@ public class TransaksiController {
             // total harga di tampung dalam variable baru
             int total_harga = (allTrx.getJumlah() * getBarang.getHarga());
 
-            // buat object baru dari transaksi dan sret nilainya
+            // buat object baru dari transaksi dan set nilainya
             TransaksiEntity newTransaksi = new TransaksiEntity();
             newTransaksi.setBarang(getBarang.getId_barang());
             newTransaksi.setJumlah(allTrx.getJumlah());
@@ -93,28 +93,33 @@ public class TransaksiController {
     // input transaksi
     @PostMapping(path = "/transaksi/add-body")
     @ResponseBody
-    public ResponseEntity<String> addTransaksiAllBody(@RequestBody SaveTransaksiAllBody transaksiBody) {
+    public ResponseEntity<String> addTransaksiAllBody(@RequestBody List<SaveTransaksiAllBody> transaksiBody) {
 
         // ambil data anggota berdasarkan nama
-        AnggotaEntity getAnggota = anggotaRepository.findByNama(transaksiBody.getNama_anggota());
+        AnggotaEntity getAnggota = anggotaRepository.findByNama(transaksiBody.get(0).getNama_anggota());
         // ambil data totalBulanan berdasarkan nama bulan
-        TotalBulananEntity getBulan = totalBulananRepository.findByBulan(transaksiBody.getNama_bulan());
-        // ambil barang berdasarkan nama barang
-        BarangEntity getBarang = barangRepository.findByNamaBarang(transaksiBody.getNama_barang());
+        TotalBulananEntity getBulan = totalBulananRepository.findByBulan(transaksiBody.get(0).getNama_bulan());
 
-        // total harga di tampung dalam variable baru
-        int total_harga = (transaksiBody.getJumlah() * getBarang.getHarga());
+        for (SaveTransaksiAllBody trb: transaksiBody) {
 
-        // buat object baru dari transaksi dan sret nilainya
-        TransaksiEntity newTransaksi = new TransaksiEntity();
-        newTransaksi.setBarang(getBarang.getId_barang());
-        newTransaksi.setJumlah(transaksiBody.getJumlah());
-        newTransaksi.setTotal_harga(total_harga);
-        newTransaksi.setBulan(getBulan.getId_bulan());
-        newTransaksi.setAnggota(getAnggota.getId_anggota());
+            // ambil barang berdasarkan nama barang
+            BarangEntity getBarang = barangRepository.findByNamaBarang(trb.getNama_barang());
 
-        // simpan setiap trnsaksi baru
-        transaksiRepository.save(newTransaksi);
+            // total harga di tampung dalam variable baru
+            int total_harga = (trb.getJumlah() * getBarang.getHarga());
+
+            // buat object baru dari transaksi dan sret nilainya
+            TransaksiEntity newTransaksi = new TransaksiEntity();
+            newTransaksi.setBarang(getBarang.getId_barang());
+            newTransaksi.setJumlah(trb.getJumlah());
+            newTransaksi.setTotal_harga(total_harga);
+            newTransaksi.setBulan(getBulan.getId_bulan());
+            newTransaksi.setAnggota(getAnggota.getId_anggota());
+
+            // simpan setiap trnsaksi baru
+            transaksiRepository.save(newTransaksi);
+
+        }
 
         // ambil list data transaksi terakhir berdasarkan id bulan
         List<TransaksiEntity> totalTrx = transaksiRepository.findAllByBulan(getBulan.getId_bulan());
